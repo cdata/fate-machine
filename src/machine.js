@@ -1,4 +1,6 @@
-import { Signal } from './signal.js';
+import { Signal } from './signal';
+import { Clock } from './clock';
+import { Mainspring } from './mainspring';
 
 let signalNames = [
   'actorAdded',
@@ -15,28 +17,53 @@ class Machine {
 
   constructor () {
     this.fates = new Map();
-    this.actors = {};
+    this.actors = new Set();
 
-    this.signalNames.forEach(function (signalName) {
+    this.clock = new Clock(60);
+    this.mainspring = new Mainspring();
+
+    this.signalNames.forEach((signalName) => {
       this[signalName] = new Signal();
     });
   }
 
+  start () {
+    this.clock.start();
+    this.mainspring.drive(this.update.bind(this));
+  }
+
+  stop () {
+    this.clock.stop();
+    this.mainspring.exhaust();
+  }
+
+  update () {
+    for (let [Fate, fate] of this.fates) {
+      fate.update(this.clock.ticks);
+    }
+
+    this.clock.split();
+  }
+
   addActor (actor) {
-    if (this.actors[actor.id]) {
+    if (this.actors.has(actor)) {
       return;
     }
 
-    this.actors[actor.id] = actor;
+    this.actors.add(actor);
+
+    actor.childAdded.await(this.addActor, this);
+    actor.willBeDestroyed.await(this.removeActor, this);
+
     this.actorAdded.emit(actor, this);
   }
 
   removeActor (actor) {
-    if (!this.actors[actor.id]) {
+    if (!this.actors.has(actor)) {
       return;
     }
 
-    this.actors[actor.id] = null;
+    this.actors.delete(actor);
     this.actorRemoved.emit(actor, this);
   }
 
@@ -66,3 +93,5 @@ class Machine {
     this.fateRemoved.emit(fate, this);
   }
 }
+
+export { Machine };

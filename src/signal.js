@@ -4,7 +4,7 @@ class Signal {
   }
 
   emit (...args) {
-    for (let context, handlers of this.handlers) {
+    for (let [context, handlers] of this.handlers) {
       for (let handler of handlers) {
         handler.apply(context, args);
       }

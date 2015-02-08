@@ -1,32 +1,32 @@
-let requiredStates = Object.freeze([]);
+let requiredAspects = Object.freeze([]);
 
-class Behavior () {
-  static get requiredStates () {
-    return requiredStates;
+class Behavior {
+  static get requiredAspects () {
+    return requiredAspects;
   }
 
   static isExhibitedBy (actor) {
-    return !!this.collectRequiredStatesFrom(actor);
+    return !!this.collectRequiredAspectsFrom(actor);
   }
 
-  static collectRequiredStatesFrom (actor) {
-    let states = new WeakMap();
+  static collectRequiredAspectsFrom (actor) {
+    let aspects = new WeakMap();
 
-    this.requiredStates.reduce(function (states, RequiredState) {
-      if (actor.states.has(RequiredState)) {
-        states.set(RequiredState, actor.states.get(requiredState));
+    for (let Aspect of this.requiredAspects) {
+      if (!actor.aspects.has(Aspect)) {
+        return;
       }
 
-      return states;
-    });
-
-    if (states.length === this.requiredStateslength) {
-      return states;
+      aspects.set(Aspect, actor.aspects.get(Aspect));
     }
+
+    return aspects;
   }
 
   constructor (actor) {
     this.actor = actor;
-    this.states = this.constructor.collectRequiredStatesFrom(actor);
+    this.aspects = this.constructor.collectRequiredAspectsFrom(actor);
   }
+
+  update () {}
 }

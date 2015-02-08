@@ -1,5 +1,5 @@
-import { Behavior } from './behavior.js';
-import { Signal } from './signal.js';
+import { Behavior } from './behavior';
+import { Signal } from './signal';
 
 class Fate {
   get Behavior () {
@@ -14,23 +14,22 @@ class Fate {
     this.behaviorAdded = new Signal();
     this.behaviorRemoved = new Signal();
 
-    Object.values(this.machine.actors)
-      .forEach(this.observeActor.bind(this));
+    this.machine.actors.forEach(this.observeActor.bind(this));
 
     machine.actorAdded.await(this.observeActor, this);
     machine.actorRemoved.await(this.forgetActor, this);
   }
 
   observeActor (actor) {
-    actor.stateAdded.await(this.considerActor, this);
-    actor.stateRemoved.await(this.considerActor, this);
+    actor.aspectAdded.await(this.considerActor, this);
+    actor.aspectRemoved.await(this.considerActor, this);
 
     this.considerActor(actor);
   }
 
   forgetActor (actor) {
-    actor.stateAdded.forget(this.considerActor, this);
-    actor.stateRemoved.forget(this.considerActor, this);
+    actor.aspectAdded.forget(this.considerActor, this);
+    actor.aspectRemoved.forget(this.considerActor, this);
 
     this.removeBehaviorFor(actor);
   }
@@ -72,4 +71,12 @@ class Fate {
 
     this.behaviorRemoved.emit(behavior, this);
   }
+
+  update (delta) {
+    for (let behavior of this.behaviors) {
+      behavior.update(delta, this.behaviors);
+    }
+  }
 }
+
+export { Fate };

@@ -1,11 +1,12 @@
-import { Signal } from './signal.js';
+import { Signal } from './signal';
 
 let signalNames = [
   'parentChanged',
   'childAdded',
   'childRemoved',
-  'stateAdded',
-  'stateRemoved'
+  'aspectAdded',
+  'aspectRemoved',
+  'willBeDestroyed'
 ];
 
 class Actor {
@@ -13,30 +14,28 @@ class Actor {
     return signalNames;
   }
 
-  constructor (machine) {
-    this.machine = machine;
-
-    this.states = new Map();
+  constructor () {
+    this.aspects = new Map();
 
     this.children = [];
     this.parent = null;
 
-    this.signalNames.forEach(function (signalName) {
+    this.signalNames.forEach((signalName) => {
       this[signalName] = new Signal();
-    }, this);
+    });
 
     this.create();
-
-    this.machine.addActor(this);
   }
 
   create () {}
 
   destroy () {
-    this.signalNames.forEach(function (signalName) {
+    this.willBeDestroyed.emit(this);
+
+    this.signalNames.forEach((signalName) => {
       this[signalName].destroy();
-    }, this);
-    this.states = null;
+    });
+    this.aspects = null;
     this.children = null;
   }
 
@@ -68,25 +67,27 @@ class Actor {
     this.childRemoved.emit(actor, this);
   }
 
-  addState (State) {
-    let state;
+  addAspect (Aspect) {
+    let aspect;
 
-    if (this.states.has(State)) {
+    if (this.aspects.has(Aspect)) {
       return;
     }
 
-    state = new State(this);
+    aspect = new Aspect(this);
 
-    this.states.set(State, state);
-    this.stateAdded.emit(state, this);
+    this.aspects.set(Aspect, aspect);
+    this.aspectAdded.emit(aspect, this);
   }
 
-  removeState (State) {
-    if (!this.states.has(State)) {
+  removeAspect (Aspect) {
+    if (!this.aspects.has(Aspect)) {
       return;
     }
 
-    this.states.delete(State);
-    this.stateRemoved.emit(state, this);
+    this.aspects.delete(Aspect);
+    this.aspectRemoved.emit(aspect, this);
   }
 }
+
+export { Actor };
