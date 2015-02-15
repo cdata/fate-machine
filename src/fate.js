@@ -2,6 +2,14 @@ import { Behavior } from './behavior';
 import { Signal } from './signal';
 
 class Fate {
+  static forBehavior (Behavior) {
+    return class DynamicFate extends Fate {
+      get Behavior () {
+        return Behavior;
+      }
+    };
+  }
+
   get Behavior () {
     return Behavior;
   }
@@ -9,6 +17,7 @@ class Fate {
   constructor (machine) {
     this.machine = machine;
     this.behaviors = new Set();
+    this.behaviorArray = [];
     this.behaviorsByActor = new WeakMap();
 
     this.behaviorAdded = new Signal();
@@ -53,6 +62,7 @@ class Fate {
 
     this.behaviors.add(behavior);
     this.behaviorsByActor.set(actor, behavior);
+    this.behaviorArray.push(behavior);
 
     this.behaviorAdded.emit(behavior, this);
   }
@@ -68,14 +78,15 @@ class Fate {
 
     this.behaviors.delete(behavior);
     this.behaviorsByActor.delete(actor);
+    this.behaviorArray.splice(this.behaviorArray.indexOf(behavior), 1);
 
     this.behaviorRemoved.emit(behavior, this);
   }
 
   update (delta) {
-    for (let behavior of this.behaviors) {
+    this.behaviorArray.forEach((behavior) => {
       behavior.update(delta, this.behaviors);
-    }
+    });
   }
 }
 

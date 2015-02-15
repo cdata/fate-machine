@@ -1,22 +1,23 @@
 import { Signal } from './signal';
 import { Clock } from './clock';
 import { Mainspring } from './mainspring';
-
-let signalNames = [
-  'actorAdded',
-  'actorRemoved',
-  'fateAdded',
-  'fateRemoved',
-  'tick'
-];
+import { Fate } from './fate';
 
 class Machine {
   get signalNames () {
-    return signalNames;
+    return [
+      'actorAdded',
+      'actorRemoved',
+      'fateAdded',
+      'fateRemoved',
+      'tick'
+    ];
   }
 
   constructor () {
     this.fates = new Map();
+    this.fateArray = [];
+
     this.actors = new Set();
 
     this.clock = new Clock(60);
@@ -38,9 +39,9 @@ class Machine {
   }
 
   update () {
-    for (let [Fate, fate] of this.fates) {
+    this.fateArray.forEach((fate) => {
       fate.update(this.clock.ticks);
-    }
+    });
 
     this.clock.split();
   }
@@ -75,22 +76,31 @@ class Machine {
     }
 
     fate = new Fate(this);
+
     this.fates.set(Fate, fate);
+    this.fateArray.push(fate);
 
     this.fateAdded.emit(fate, this);
   }
 
   removeFate (Fate) {
     let fate;
+    let fateIndex;
 
     if (!this.fates.has(Fate)) {
       return;
     }
 
     fate = this.fates.get(Fate);
+
     this.fates.delete(Fate);
+    this.fateArray.splice(this.fateArray.indexOf(fate), 1);
 
     this.fateRemoved.emit(fate, this);
+  }
+
+  addFateForBehavior (Behavior) {
+    this.addFate(Fate.forBehavior(Behavior));
   }
 }
 
