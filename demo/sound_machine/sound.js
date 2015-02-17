@@ -126,8 +126,13 @@ class Sound {
 }
 
 class Frequency {
-  constructor (ratio) {
-    this.ratio = ratio;
+  constructor (index, total) {
+    this.index = index;
+    this.total = total;
+  }
+
+  get ratio () {
+    return this.index / this.total;
   }
 }
 
@@ -147,19 +152,19 @@ class Oscillates extends Behavior {
 
     let currentValue = this.currentValue;
 
-    this.transform.position.x = this.frequency.ratio * window.innerWidth;
+    this.transform.position.x = this.frequency.ratio * window.innerWidth + window.innerWidth / this.frequency.total / 2;
     this.transform.position.y = currentValue / 128.0 * 200;
 
-    let scale = ((0|currentValue - 128.0) / 128.0);
+    let scale = ((currentValue - 128.0) / 128.0);
 
-    if (scale < 0.1 && scale > 0.0) {
+    if (scale < 0.1 && scale >= 0.0) {
       scale = 0.1;
     } else if (scale > -0.1 && scale < 0.0) {
       scale = -0.1;
     }
 
     this.transform.scale.y = scale * 200;
-    this.transform.scale.x = 4;
+    this.transform.scale.x = window.innerWidth / this.frequency.total;
   }
 
   get timeDataIndex () {

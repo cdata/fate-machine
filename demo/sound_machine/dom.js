@@ -11,9 +11,8 @@ class ToilsInDocument extends Behavior {
 
   update (delta) {
     this.domNode.style = {
-      transform: `translate(${this.transform.position.x}px, ${this.transform.position.y}px)
-                  scale(${this.transform.scale.x}, ${this.transform.scale.y})
-                  rotate(${this.transform.rotation.z}deg)`
+      transform: `translate3d(${this.transform.position.x}px, ${this.transform.position.y}px, 0)
+                  scale3d(${this.transform.scale.x}, ${this.transform.scale.y}, 1)`
     };
   }
 }
@@ -24,10 +23,6 @@ class DomNode {
     this.element.className = "sound-machine dom-node";
 
     document.body.appendChild(this.element);
-
-    //this.style = {
-      //backgroundColor: `rgba(${this.randomRgb},${this.randomRgb},${this.randomRgb},0.75)`
-    //};
   }
 
   get randomRgb () {

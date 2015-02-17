@@ -4,11 +4,11 @@ import { Sound, Frequency } from '../sound';
 import { Actor } from '../../../actor';
 
 class OscillatingDomNode extends Actor {
-  create (soundFile, frequencyRatio) {
+  create (soundFile, index, total) {
     this.addAspect(Transform);
     this.addAspect(DomNode);
     this.addAspect(Sound, soundFile);
-    this.addAspect(Frequency, frequencyRatio);
+    this.addAspect(Frequency, index, total);
   }
 }
 

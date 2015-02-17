@@ -15,7 +15,7 @@ machine.addFateForBehavior(ToilsInDocument);
 machine.addFateForBehavior(Oscillates);
 
 for (let i = 0; i < nodeCount; ++i) {
-  machine.addActor(new OscillatingDomNode('solstice-sub.mp3', i / nodeCount));
+  machine.addActor(new OscillatingDomNode('solstice-sub.mp3', i, nodeCount));
 }
 
 machine.start();
