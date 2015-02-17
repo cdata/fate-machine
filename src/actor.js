@@ -1,9 +1,6 @@
 import { Signal } from './signal';
 
 let signalNames = [
-  'parentChanged',
-  'childAdded',
-  'childRemoved',
   'aspectAdded',
   'aspectRemoved',
   'willBeDestroyed'
@@ -14,17 +11,14 @@ class Actor {
     return signalNames;
   }
 
-  constructor () {
+  constructor (...args) {
     this.aspects = new Map();
-
-    this.children = [];
-    this.parent = null;
 
     this.signalNames.forEach((signalName) => {
       this[signalName] = new Signal();
     });
 
-    this.create();
+    this.create(...args);
   }
 
   create () {}
@@ -36,45 +30,16 @@ class Actor {
       this[signalName].destroy();
     });
     this.aspects = null;
-    this.children = null;
   }
 
-  addChild (actor) {
-    if (actor.parent === this) {
-      return;
-    }
-
-    actor.parent = this;
-    actor.parentChanged.emit(this, actor);
-
-    this.children.push(actor);
-    this.childAdded.emit(actor, this);
-  }
-
-  removeChild (actor) {
-    if (actor.parent !== this) {
-      return;
-    }
-
-    this.children.splice(
-      this.children.indexOf(actor),
-      1
-    );
-
-    actor.parent = null;
-    actor.parentChanged.emit(null, actor);
-
-    this.childRemoved.emit(actor, this);
-  }
-
-  addAspect (Aspect) {
+  addAspect (Aspect, ...args) {
     let aspect;
 
     if (this.aspects.has(Aspect)) {
       return;
     }
 
-    aspect = new Aspect(this);
+    aspect = new Aspect(...args);
 
     this.aspects.set(Aspect, aspect);
     this.aspectAdded.emit(aspect, this);

@@ -25,9 +25,9 @@ class DomNode {
 
     document.body.appendChild(this.element);
 
-    this.style = {
-      backgroundColor: `rgba(${this.randomRgb},${this.randomRgb},${this.randomRgb},0.75)`
-    };
+    //this.style = {
+      //backgroundColor: `rgba(${this.randomRgb},${this.randomRgb},${this.randomRgb},0.75)`
+    //};
   }
 
   get randomRgb () {

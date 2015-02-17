@@ -53,7 +53,6 @@ class Machine {
 
     this.actors.add(actor);
 
-    actor.childAdded.await(this.addActor, this);
     actor.willBeDestroyed.await(this.removeActor, this);
 
     this.actorAdded.emit(actor, this);

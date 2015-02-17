@@ -23,9 +23,6 @@ class Pulsates extends Behavior {
 
     scale = Math.sin(this.t0 / denominator);
 
-    this.transform.position.x = this.xOrigin + Math.cos(this.t0 / denominator + Math.PI / 2) * 100 + 100;
-    this.transform.position.y = this.yOrigin + Math.cos(this.t0 / denominator) * 100 + 100;
-
     this.transform.rotation.z = Math.sin(this.t0 / denominator) * 360;
 
     this.transform.scale.set(
