@@ -1,17 +1,17 @@
 class Behavior {
-  static get requiredAspects () {
+  static get expectedAspects () {
     return {};
   }
 
   static isExhibitedBy (actor) {
-    return !!this.collectRequiredAspectsFrom(actor);
+    return !!this.collectExpectedAspectsFrom(actor);
   }
 
-  static collectRequiredAspectsFrom (actor) {
+  static collectExpectedAspectsFrom (actor) {
     let aspects = new WeakMap();
 
-    Object.keys(this.requiredAspects).forEach((property) => {
-      let Aspect = this.requiredAspects[property];
+    Object.keys(this.expectedAspects).forEach((property) => {
+      let Aspect = this.expectedAspects[property];
 
       if (!actor.aspects.has(Aspect)) {
         return;
@@ -25,10 +25,10 @@ class Behavior {
 
   constructor (actor) {
     this.actor = actor;
-    this.aspects = this.constructor.collectRequiredAspectsFrom(actor);
+    this.aspects = this.constructor.collectExpectedAspectsFrom(actor);
 
-    Object.keys(this.constructor.requiredAspects).forEach((property) => {
-      let Aspect = this.constructor.requiredAspects[property];
+    Object.keys(this.constructor.expectedAspects).forEach((property) => {
+      let Aspect = this.constructor.expectedAspects[property];
       let aspect = this.aspects.get(Aspect);
 
       Object.defineProperty(this, property, {

@@ -1,4 +1,4 @@
-import { Behavior } from '../../behavior';
+import { Fate, Behavior } from '../../fate';
 import { Transform } from '../../aspect/transform';
 
 let ready = Symbol('ready');
@@ -136,8 +136,8 @@ class Frequency {
   }
 }
 
-class Oscillates extends Behavior {
-  static get requiredAspects () {
+class OscillatesBehavior extends Behavior {
+  static get expectedAspects () {
     return {
       sound: Sound,
       frequency: Frequency,
@@ -151,20 +151,12 @@ class Oscillates extends Behavior {
     }
 
     let currentValue = this.currentValue;
+    let currentRatio = currentValue / 255.0;
 
     this.transform.position.x = this.frequency.ratio * window.innerWidth + window.innerWidth / this.frequency.total / 2;
-    this.transform.position.y = currentValue / 128.0 * 200;
 
-    let scale = ((currentValue - 128.0) / 128.0);
-
-    if (scale < 0.1 && scale >= 0.0) {
-      scale = 0.1;
-    } else if (scale > -0.1 && scale < 0.0) {
-      scale = -0.1;
-    }
-
-    this.transform.scale.y = scale * 200;
-    this.transform.scale.x = window.innerWidth / this.frequency.total;
+    this.transform.position.y = currentRatio * 200;
+    this.transform.scale.y = 200 - 2 * currentRatio * 200;
   }
 
   get timeDataIndex () {
@@ -181,6 +173,12 @@ class Oscillates extends Behavior {
 
   get currentValue () {
     return this.timeData[this.timeDataIndex];
+  }
+}
+
+class Oscillates extends Fate {
+  get Behavior () {
+    return OscillatesBehavior;
   }
 }
 

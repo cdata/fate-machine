@@ -2,32 +2,32 @@ import { Behavior } from './behavior';
 import { Signal } from './signal';
 
 class Fate {
-  static forBehavior (Behavior) {
-    return class DynamicFate extends Fate {
-      get Behavior () {
-        return Behavior;
-      }
-    };
-  }
-
   get Behavior () {
     return Behavior;
   }
 
+  get expectedAspects () {
+    return [];
+  }
+
   constructor (machine) {
     this.machine = machine;
-    this.behaviors = new Set();
-    this.behaviorArray = [];
-    this.behaviorsByActor = new WeakMap();
 
-    this.behaviorAdded = new Signal();
-    this.behaviorRemoved = new Signal();
+    this.actors = new Set();
+    this.behaviors = new Map();
 
     this.machine.actors.forEach(this.observeActor.bind(this));
 
     machine.actorAdded.await(this.observeActor, this);
     machine.actorRemoved.await(this.forgetActor, this);
+
+    this.actorGoverned = new Signal();
+    this.actorUngoverned = new Signal();
+
+    this.create();
   }
+
+  create () {}
 
   observeActor (actor) {
     actor.aspectAdded.await(this.considerActor, this);
@@ -36,58 +36,53 @@ class Fate {
     this.considerActor(actor);
   }
 
-  forgetActor (actor) {
+  unobserveActor (actor) {
     actor.aspectAdded.forget(this.considerActor, this);
     actor.aspectRemoved.forget(this.considerActor, this);
 
-    this.removeBehaviorFor(actor);
+    this.ungovernActor(actor);
   }
 
   considerActor (actor) {
-    if (this.Behavior.isExhibitedBy(actor)) {
-      this.addBehaviorFor(actor);
+    if (this.shouldGovernActor(actor)) {
+      this.governActor(actor);
     } else {
-      this.removeBehaviorFor(actor);
+      this.ungovernActor(actor);
     }
   }
 
-  addBehaviorFor (actor) {
-    let behavior;
-
-    if (this.behaviorsByActor.has(actor)) {
-      return;
-    }
-
-    behavior = new this.Behavior(actor);
-
-    this.behaviors.add(behavior);
-    this.behaviorsByActor.set(actor, behavior);
-    this.behaviorArray.push(behavior);
-
-    this.behaviorAdded.emit(behavior, this);
+  shouldGovernActor (actor) {
+    return this.Behavior.isExhibitedBy(actor);
   }
 
-  removeBehaviorFor (actor) {
-    let behavior;
-
-    if (!this.behaviorsByActor.has(actor)) {
+  governActor (actor) {
+    if (this.actors.has(actor)) {
       return;
     }
 
-    behavior = this.behaviorsByActor.get(actor);
+    this.actors.add(actor);
+    this.behaviors.set(actor, new this.Behavior(actor));
 
-    this.behaviors.delete(behavior);
-    this.behaviorsByActor.delete(actor);
-    this.behaviorArray.splice(this.behaviorArray.indexOf(behavior), 1);
+    this.actorGoverned.emit(actor, this);
+  }
 
-    this.behaviorRemoved.emit(behavior, this);
+  ungovernActor (actor) {
+    if (!this.actors.has(actor)) {
+      return;
+    }
+
+    this.actors.remove(actor);
+    this.behaviors.delete(actor);
+
+    this.actorUngoverned.emit(actor, this);
   }
 
   update (delta) {
-    this.behaviorArray.forEach((behavior) => {
-      behavior.update(delta, this.behaviors);
-    });
+    for (let actor of this.actors) {
+      this.behaviors.get(actor).update(delta, this);
+    }
   }
 }
 
 export { Fate };
+export { Behavior } from './behavior';
