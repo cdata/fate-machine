@@ -10,7 +10,7 @@ class Fate {
     return [];
   }
 
-  constructor (machine) {
+  constructor (machine, ...args) {
     this.machine = machine;
 
     this.actors = new Set();
@@ -24,7 +24,7 @@ class Fate {
     this.actorGoverned = new Signal();
     this.actorUngoverned = new Signal();
 
-    this.create();
+    this.create(...args);
   }
 
   create () {}
@@ -61,7 +61,7 @@ class Fate {
     }
 
     this.actors.add(actor);
-    this.behaviors.set(actor, new this.Behavior(actor));
+    this.behaviors.set(actor, new this.Behavior(actor, this));
 
     this.actorGoverned.emit(actor, this);
   }

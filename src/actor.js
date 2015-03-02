@@ -35,22 +35,22 @@ class Actor {
   addAspect (Aspect, ...args) {
     let aspect;
 
-    if (this.aspects.has(Aspect)) {
+    if (this.aspects.has(Aspect.type)) {
       return;
     }
 
     aspect = new Aspect(...args);
 
-    this.aspects.set(Aspect, aspect);
+    this.aspects.set(Aspect.type, aspect);
     this.aspectAdded.emit(aspect, this);
   }
 
   removeAspect (Aspect) {
-    if (!this.aspects.has(Aspect)) {
+    if (!this.aspects.has(Aspect.type)) {
       return;
     }
 
-    this.aspects.delete(Aspect);
+    this.aspects.delete(Aspect.type);
     this.aspectRemoved.emit(aspect, this);
   }
 }

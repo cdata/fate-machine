@@ -67,14 +67,14 @@ class Machine {
     this.actorRemoved.emit(actor, this);
   }
 
-  addFate (Fate) {
+  addFate (Fate, ...args) {
     let fate;
 
     if (this.fates.has(Fate)) {
       return;
     }
 
-    fate = new Fate(this);
+    fate = new Fate(this, ...args);
 
     this.fates.set(Fate, fate);
     this.fateArray.push(fate);

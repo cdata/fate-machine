@@ -153,10 +153,10 @@ class OscillatesBehavior extends Behavior {
     let currentValue = this.currentValue;
     let currentRatio = currentValue / 255.0;
 
-    this.transform.position.x = this.frequency.ratio * window.innerWidth + window.innerWidth / this.frequency.total / 2;
+    this.transform.position.x = this.frequency.ratio * 1024 + 1024 / this.frequency.total - 512;
 
-    this.transform.position.y = currentRatio * 200;
-    this.transform.scale.y = 200 - 2 * currentRatio * 200;
+    this.transform.position.y = currentRatio * 50;
+    this.transform.scale.y = 200 - 2 * currentRatio * 50;
   }
 
   get timeDataIndex () {

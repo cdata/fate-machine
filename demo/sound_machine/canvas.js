@@ -28,8 +28,8 @@ class TwoDimensional extends Fate {
 
   create () {
     this.canvas = document.createElement('canvas');
-    this.canvas.width = window.innerWidth;
-    this.canvas.height = window.innerHeight;
+    this.canvas.width = 2048;
+    this.canvas.height = 400;
     this.context = this.canvas.getContext('2d');
   }
 
