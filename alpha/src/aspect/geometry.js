@@ -8,6 +8,10 @@ class Geometry extends Aspect {
   constructor (vertices) {
     this.vertices = vertices;
   }
+
+  get size () {
+    return 0|(this.vertices.length / 3);
+  }
 }
 
 export { Geometry };

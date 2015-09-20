@@ -22,7 +22,7 @@ class ThreeDimensionalBehavior extends Behavior {
     let vertexBuffer = gl.createBuffer();
 
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer)
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.geometry.vertices), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, this.geometry.vertices, gl.STATIC_DRAW);
 
     this.vertexBuffer = vertexBuffer;
     this.compiledShader = new CompiledShader(this.shader, gl);
@@ -48,7 +48,7 @@ class ThreeDimensionalBehavior extends Behavior {
     gl.uniformMatrix4fv(this.compiledShader.perspectiveUniform, false, this.fate.perspectiveMatrix.elements);
     gl.uniformMatrix4fv(this.compiledShader.modelViewUniform, false, this.fate.modelViewMatrix.elements);
 
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    gl.drawArrays(gl.TRIANGLES, 0, this.geometry.size);
   }
 }
 

@@ -32,6 +32,10 @@ class Actor {
     this.aspects = null;
   }
 
+  getAspect (Aspect) {
+    return this.aspects.get(Aspect && Aspect.type);
+  }
+
   addAspect (Aspect, ...args) {
     let aspect;
 
