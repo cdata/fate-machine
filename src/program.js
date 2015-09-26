@@ -28,9 +28,12 @@
       return cache.get(Program);
     }
 
-    constructor (vertexShader, fragmentShader) {
-      this.vertexShader = vertexShader || defaultVertexShader;
-      this.fragmentShader = fragmentShader || defaultFragmentShader;
+    get vertexShader () {
+      return defaultVertexShader;
+    }
+
+    get fragmentShader () {
+      return defaultFragmentShader;
     }
 
     link (gl) {

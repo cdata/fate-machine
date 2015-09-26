@@ -7,12 +7,12 @@
   document.body.appendChild(canvas);
 
   class TriangleGeometry extends Geometry {
-    constructor () {
-      super(Float32Array.from([
+    allocateVertices () {
+      return glMatrix.ARRAY_TYPE.from([
         0.0,  1.0,  0.0,
        -1.0, -1.0,  0.0,
         1.0, -1.0,  0.0
-      ]));
+      ]);
     }
   }
 
@@ -90,8 +90,10 @@
 
       this.frame = 0;
       this.triangle = new Triangle();
+      //this.cube = new Cube();
 
       this.addChild(this.triangle);
+      //this.addChild(this.cube);
     }
 
     update () {
@@ -119,5 +121,6 @@
     window.requestAnimationFrame(render);
   })();
 
+  window.scene = scene;
   window.renderer = renderer;
 })();

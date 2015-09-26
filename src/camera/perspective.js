@@ -1,8 +1,8 @@
 (function () {
   'use strict';
 
-  let interstitialMatrix = mat4.create();
-  let interstitialVector = vec3.create();
+  const interstitialMatrix = mat4.create();
+  const interstitialVector = vec3.create();
 
   class PerspectiveCamera extends SceneNode {
     constructor (fov, aspectRatio, near, far) {

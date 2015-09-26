@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  let eventListeners = Symbol('eventListeners');
+  const eventListeners = Symbol('eventListeners');
 
   class Evented {
     constructor() {

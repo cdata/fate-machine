@@ -1,49 +1,70 @@
 (function () {
   'use strict'
 
-  let vertices = Symbol('vertices');
-  let createVertexBuffer = Symbol('createVertexBuffer');
-
-  let geometryVertexBufferCache = new Map();
+  const rawVertices = Symbol('vertices');
+  const vertexBuffer = Symbol('vertexBuffer');
+  const isDirty = Symbol('isDirty');
 
   class Geometry extends Component {
     get type () {
       return 'geometry';
     }
 
-    get vertices () {
-      return this[vertices];
+    get rawVertices () {
+      return this[rawVertices];
     }
 
     get length () {
-      return 0|(this.vertices.length / this.size);
+      return Math.floor(this.rawVertices.length / this.size);
     }
 
     get size () {
       return 3;
     }
 
-    constructor (_vertices) {
+    constructor () {
       super();
+      this[rawVertices] = this.allocateVertices();
+      this.update();
+    }
 
-      this[vertices] = _vertices;
+    vertexAt (index) {
+      return new glMatrix.ARRAY_TYPE(
+        this.rawVertices.buffer,
+        this.size * glMatrix.ARRAY_TYPE.BYTES_PER_ELEMENT * index,
+        this.size
+      );
+    }
+
+    allocateVertices () {
+      return new glMatrix.ARRAY_TYPE([]);
+    }
+
+    update () {
+      this[isDirty] = true;
     }
 
     createVertexBuffer (gl) {
-      if (!geometryVertexBufferCache.has(this.constructor)) {
-        geometryVertexBufferCache.set(this.constructor, this[createVertexBuffer](gl));
+      if (!this[vertexBuffer]) {
+        this[vertexBuffer] = gl.createBuffer();
       }
 
-      return geometryVertexBufferCache.get(this.constructor);
+      if (this[isDirty]) {
+        gl.bindBuffer(gl.ARRAY_BUFFER, this[vertexBuffer]);
+        gl.bufferData(gl.ARRAY_BUFFER, this.rawVertices, gl.STATIC_DRAW);
+
+        this[isDirty] = false;
+      }
+
+      return this[vertexBuffer];
     }
 
-    [createVertexBuffer] (gl) {
-      let vertexBuffer = gl.createBuffer();
+    * [Symbol.iterator] () {
+      let length = this.length;
 
-      gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-      gl.bufferData(gl.ARRAY_BUFFER, this.vertices, gl.STATIC_DRAW);
-
-      return vertexBuffer;
+      for (let index = 0; index < length; ++index) {
+        yield this.vertexAt(index);
+      }
     }
   }
 

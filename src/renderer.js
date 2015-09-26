@@ -1,18 +1,18 @@
 (function() {
   'use strict';
 
-  let options = Symbol('options');
-  let canvas = Symbol('canvas');
-  let gl = Symbol('gl');
+  const options = Symbol('options');
+  const canvas = Symbol('canvas');
+  const gl = Symbol('gl');
 
-  let useCamera = Symbol('useCamera');
-  let setupGl = Symbol('setupGl');
-  let configureGl = Symbol('configureGl');
-  let renderSceneGraph = Symbol('renderSceneGraph');
+  const useCamera = Symbol('useCamera');
+  const setupGl = Symbol('setupGl');
+  const configureGl = Symbol('configureGl');
+  const renderSceneGraph = Symbol('renderSceneGraph');
 
-  let perspectiveMatrix = mat4.create();
-  let modelViewMatrix = mat4.create();
-  let intermediateMatrix = mat4.create();
+  const perspectiveMatrix = mat4.create();
+  const modelViewMatrix = mat4.create();
+  const intermediateMatrix = mat4.create();
 
   class Renderer {
     get gl () {
@@ -151,6 +151,12 @@
           intermediateMatrix,
           transform.rotation,
           transform.position
+        );
+
+        mat4.scale(
+          intermediateMatrix,
+          intermediateMatrix,
+          transform.scale
         );
 
         mat4.multiply(modelViewMatrix, modelViewMatrix, intermediateMatrix);

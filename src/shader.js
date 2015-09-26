@@ -1,9 +1,9 @@
 (function () {
   'use strict';
 
-  let source = Symbol('source');
-  let type = Symbol('type');
-  let selectGlType = Symbol('selectGlType');
+  const source = Symbol('source');
+  const type = Symbol('type');
+  const selectGlType = Symbol('selectGlType');
 
   const types = {
     VERTEX: 0,

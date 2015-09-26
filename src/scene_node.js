@@ -1,9 +1,9 @@
 (function () {
   'use strict';
 
-  let components = Symbol('components');
-  let children = Symbol('children');
-  let parent = Symbol('parent');
+  const components = Symbol('components');
+  const children = Symbol('children');
+  const parent = Symbol('parent');
 
   class SceneNode extends Evented {
     get components () {

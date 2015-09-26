@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  let camera = Symbol('camera');
+  const camera = Symbol('camera');
 
   class Scene extends SceneNode {
 

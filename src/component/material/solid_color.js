@@ -1,10 +1,11 @@
 (function () {
   'use strict';
 
-  let color = Symbol('color');
+  const color = Symbol('color');
 
-  let colorProgram = new Program(
-    new VertexShader(
+  class SolidColorProgram extends Program {
+    get vertexShader () {
+      return new VertexShader(
 `
 precision highp float;
 precision highp int;
@@ -22,8 +23,11 @@ void main(void) {
   gl_Position = perspectiveMatrix * modelViewMatrix * vec4(vertexPosition, 1.0);
 }
 `
-    ),
-    new FragmentShader(
+      );
+    }
+
+    get fragmentShader () {
+      return new FragmentShader(
 `
 precision highp float;
 precision highp int;
@@ -34,12 +38,13 @@ void main(void) {
   gl_FragColor = vColor;
 }
 `
-    )
-  );
+      );
+    }
+  }
 
   class SolidColorMaterial extends Material {
     constructor (r, g, b, a) {
-      super(colorProgram);
+      super(new SolidColorProgram());
 
       this[color] = vec4.fromValues(r / 255, g / 255, b / 255, a);
     }
