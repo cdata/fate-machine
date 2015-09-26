@@ -2,7 +2,9 @@
   'use strict'
 
   const rawVertices = Symbol('vertices');
+  const rawIndices = Symbol('rawIndices');
   const vertexBuffer = Symbol('vertexBuffer');
+  const indexBuffer = Symbol('indexBuffer');
   const isDirty = Symbol('isDirty');
 
   class Geometry extends Component {
@@ -12,6 +14,10 @@
 
     get rawVertices () {
       return this[rawVertices];
+    }
+
+    get rawIndices () {
+      return this[rawIndices];
     }
 
     get length () {
@@ -24,7 +30,8 @@
 
     constructor () {
       super();
-      this[rawVertices] = this.allocateVertices();
+      this[rawVertices] = this.allocateVertices.apply(this, arguments);
+      this[rawIndices] = this.allocateIndices.apply(this, arguments);
       this.update();
     }
 
@@ -37,6 +44,10 @@
     }
 
     allocateVertices () {
+      return new glMatrix.ARRAY_TYPE([]);
+    }
+
+    allocateIndices () {
       return new glMatrix.ARRAY_TYPE([]);
     }
 
@@ -57,6 +68,16 @@
       }
 
       return this[vertexBuffer];
+    }
+
+    createIndexBuffer (gl) {
+      if (!this[indexBuffer]) {
+        this[indexBuffer] = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this[indexBuffer]);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.rawIndices, gl.STATIC_DRAW);
+      }
+
+      return this[indexBuffer];
     }
 
     * [Symbol.iterator] () {

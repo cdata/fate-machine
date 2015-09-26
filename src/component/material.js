@@ -44,6 +44,8 @@
       gl.vertexAttribPointer(vertexPositionAttributeLocation, this.geometry.size, gl.FLOAT, false, 0, 0);
       gl.enableVertexAttribArray(vertexPositionAttributeLocation); // ?????
 
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.geometry.createIndexBuffer(gl));
+
       gl.uniformMatrix4fv(perspectiveMatrixUniformLocation, false, perspectiveMatrix);
       gl.uniformMatrix4fv(modelViewMatrixUniformLocation, false, modelViewMatrix);
     }

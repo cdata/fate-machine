@@ -3,7 +3,6 @@
   // Based on https://github.com/mrdoob/three.js/blob/master/src/extras/geometries/BoxGeometry.js
 
   const buildPlane = Symbol('buildPlane');
-  const wForUAndV = Symbol('wForUAndV');
 
   const width = Symbol('width');
   const height = Symbol('height');
@@ -23,53 +22,49 @@
     }
 
     constructor (_width, _height, _depth) {
+      super(_width, _height, _depth);
+
       this[width] = _width;
       this[height] = _height;
       this[depth] = _depth;
-
-      super();
     }
 
-    allocateVertices () {
+    allocateVertices (width, height, depth) {
       let widthHalf = width / 2;
       let heightHalf = height / 2;
       let depthHalf = depth / 2;
-      let vertices = new glMatrix.ARRAY_TYPE(24);
+      let vertices = new glMatrix.ARRAY_TYPE(6 * 4 * this.size);
 
-      this[buildPlane](vertices, 'z', 'y', -1, -1, depth, height, widthHalf, 0);
-      this[buildPlane](vertices, 'z', 'y',  1, -1, depth, height, -widthHalf, 1);
-      this[buildPlane](vertices, 'x', 'z',  1,  1, width, depth, heightHalf, 2);
-      this[buildPlane](vertices, 'x', 'z',  1, -1, width, depth, -heightHalf, 3);
-      this[buildPlane](vertices, 'x', 'y',  1, -1, width, height, depthHalf, 4);
-      this[buildPlane](vertices, 'x', 'y', -1, -1, width, height, depthHalf, 5);
+      let x = 0;
+      let y = 1;
+      let z = 2;
 
-      console.log(vertices);
+      this[buildPlane](vertices, z, y, x, -1, -1, depth, height, widthHalf, 0);
+      this[buildPlane](vertices, z, y, x,  1, -1, depth, height, -widthHalf, 1);
+      this[buildPlane](vertices, x, z, y,  1,  1, width, depth, heightHalf, 2);
+      this[buildPlane](vertices, x, z, y,  1, -1, width, depth, -heightHalf, 3);
+      this[buildPlane](vertices, x, y, z,  1, -1, width, height, depthHalf, 4);
+      this[buildPlane](vertices, x, y, z, -1, -1, width, height, depthHalf, 5);
+
+      console.log(vertices, vertices.length);
 
       return vertices;
     }
 
-    [buildPlane] (vertices, u, v, uDir, vDir, width, height, depth, index) {
-      let w = this[wForUAndV](u, v);
-      let widthHalf = width / 2;
-      let heightHalf = height / 2;
-      let offset = index * this.size * 4;
+    [buildPlane] (vertices, u, v, w, uDir, vDir, width, height, depth, index) {
+      let halfWidth = width / 2;
+      let halfHeight = height / 2;
+      let offset = index * 4 * this.size;
 
       for (let y = 0; y < 2; ++y) {
         for (let x = 0; x < 2; ++x) {
-          vertices[offset] = (x * width - halfWidth) * uDir;
-          vertices[offset + 1] = (y * height - halfHeight) * vDir;
-          vertices[offset + 2] = depth;
-        }
-      }
-    }
+          let index = y * (x + 1) * 3 + offset;
 
-    [wForUAndV] (u, v) {
-      if ((u === 'x' && v === 'y') || (u === 'y' && v === 'x')) {
-        return 'z';
-      } else if ((u === 'x' && v === 'z') || (u === 'z' && v === 'x')) {
-        return 'y';
-      } else if ((u === 'z' && v === 'y') || (u === 'y' && v === 'z')) {
-        return 'w';
+          vertices[index + u] = (x * width - halfWidth) * uDir;
+          vertices[index + v] = (y * height - halfHeight) * vDir;
+          vertices[index + w] = depth;
+          console.log(index, ':', vertices[index], vertices[index + 1], vertices[index + 2]);
+        }
       }
     }
   }

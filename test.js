@@ -18,11 +18,11 @@
 
   class CubeGeometry extends Geometry {
     get size () {
-      return 4;
+      return 3;
     }
 
-    constructor () {
-      super(Float32Array.from([
+    allocateVertices () {
+      return glMatrix.ARRAY_TYPE.from([
         // Front face
         -1.0, -1.0,  1.0,
         1.0, -1.0,  1.0,
@@ -58,7 +58,18 @@
         -1.0, -1.0,  1.0,
         -1.0,  1.0,  1.0,
         -1.0,  1.0, -1.0
-      ]));
+      ]);
+    }
+
+    allocateIndices () {
+      return glMatrix.ARRAY_TYPE.from([
+        0, 1, 2,      0, 2, 3,    // Front face
+        4, 5, 6,      4, 6, 7,    // Back face
+        8, 9, 10,     8, 10, 11,  // Top face
+        12, 13, 14,   12, 14, 15, // Bottom face
+        16, 17, 18,   16, 18, 19, // Right face
+        20, 21, 22,   20, 22, 23  // Left face
+      ]);
     }
   }
 
@@ -90,10 +101,10 @@
 
       this.frame = 0;
       this.triangle = new Triangle();
-      //this.cube = new Cube();
+      this.cube = new Cube();
 
       this.addChild(this.triangle);
-      //this.addChild(this.cube);
+      this.addChild(this.cube);
     }
 
     update () {
