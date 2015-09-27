@@ -35,14 +35,10 @@
 
     apply (gl, perspectiveMatrix, modelViewMatrix) {
       let program = this.program.link(gl);
-      let vertexPositionAttributeLocation = gl.getAttribLocation(program, 'vertexPosition');
       let perspectiveMatrixUniformLocation = gl.getUniformLocation(program, 'perspectiveMatrix');
       let modelViewMatrixUniformLocation = gl.getUniformLocation(program, 'modelViewMatrix');
 
       gl.useProgram(program);
-
-      gl.vertexAttribPointer(vertexPositionAttributeLocation, this.geometry.size, gl.FLOAT, false, 0, 0);
-      gl.enableVertexAttribArray(vertexPositionAttributeLocation); // ?????
 
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.geometry.createIndexBuffer(gl));
 

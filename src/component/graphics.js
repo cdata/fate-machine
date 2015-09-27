@@ -27,11 +27,21 @@
     }
 
     draw (gl, perspectiveMatrix, modelViewMatrix) {
+      let program = this.material.program.link(gl);
+      let vertexPositionAttributeLocation = gl.getAttribLocation(program, 'vertexPosition');
+
       gl.bindBuffer(gl.ARRAY_BUFFER, this.geometry.createVertexBuffer(gl));
+
+      gl.vertexAttribPointer(vertexPositionAttributeLocation, this.geometry.size, gl.FLOAT, false, 0, 0);
+      gl.enableVertexAttribArray(vertexPositionAttributeLocation); // ?????
 
       this.material.applyIfAble(gl, perspectiveMatrix, modelViewMatrix);
 
-      gl.drawArrays(gl.TRIANGLES, 0, this.geometry.length);
+      if (this.geometry.rawIndices.length) {
+        gl.drawElements(gl.TRIANGLES, this.geometry.rawIndices.length, gl.UNSIGNED_SHORT, 0);
+      } else {
+        gl.drawArrays(gl.TRIANGLES, 0, this.geometry.length);
+      }
     }
   }
 

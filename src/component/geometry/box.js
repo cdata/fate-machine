@@ -1,71 +1,78 @@
 (function () {
   'use strict';
-  // Based on https://github.com/mrdoob/three.js/blob/master/src/extras/geometries/BoxGeometry.js
 
-  const buildPlane = Symbol('buildPlane');
-
-  const width = Symbol('width');
-  const height = Symbol('height');
-  const depth = Symbol('depth');
+  const dimensions = Symbol('dimensions');
+  const nextVertex = vec3.create();
+  const boxIndices = new Uint16Array([
+    0,  1,  2,    0,  2,  7, // Front face
+    1,  4,  3,    1,  3,  2, // Right face
+    4,  5,  6,    4,  6,  3, // Back face
+    5,  0,  7,    5,  7,  6, // Left face
+    7,  2,  3,    7,  3,  6, // Top face
+    5,  4,  1,    5,  1,  0  // Bottom face
+  ]);
 
   class BoxGeometry extends Geometry {
+    get dimensions () {
+      return this[dimensions];
+    }
+
     get width () {
-      return this[width];
+      return this[dimensions][0];
     }
 
     get height () {
-      return this[height];
+      return this[dimensions][1];
     }
 
     get depth () {
-      return this[depth];
+      return this[dimensions][2];
     }
 
-    constructor (_width, _height, _depth) {
-      super(_width, _height, _depth);
+    constructor (width, height, depth) {
+      let _dimensions = vec3.fromValues(width, height, depth);
 
-      this[width] = _width;
-      this[height] = _height;
-      this[depth] = _depth;
+      super(_dimensions);
+
+      this[dimensions] = _dimensions;
     }
 
-    allocateVertices (width, height, depth) {
-      let widthHalf = width / 2;
-      let heightHalf = height / 2;
-      let depthHalf = depth / 2;
-      let vertices = new glMatrix.ARRAY_TYPE(6 * 4 * this.size);
+    allocateVertices (dimensions) {
+      let vertices = new glMatrix.ARRAY_TYPE(8 * this.size);
 
-      let x = 0;
-      let y = 1;
-      let z = 2;
+      vec3.scale(nextVertex, dimensions, 0.5);
+      nextVertex[0] *= -1;
+      nextVertex[1] *= -1;
 
-      this[buildPlane](vertices, z, y, x, -1, -1, depth, height, widthHalf, 0);
-      this[buildPlane](vertices, z, y, x,  1, -1, depth, height, -widthHalf, 1);
-      this[buildPlane](vertices, x, z, y,  1,  1, width, depth, heightHalf, 2);
-      this[buildPlane](vertices, x, z, y,  1, -1, width, depth, -heightHalf, 3);
-      this[buildPlane](vertices, x, y, z,  1, -1, width, height, depthHalf, 4);
-      this[buildPlane](vertices, x, y, z, -1, -1, width, height, depthHalf, 5);
+      for (let i = 0; i < 4; ++i) {
+        for (let j = 0; j < 2; ++j) {
+          let index = i * 2 + j;
 
-      console.log(vertices, vertices.length);
+          for (let k = 0; k < 3; ++k) {
+            vertices[index * 3 + k] = nextVertex[k];
+          }
+
+          if (index === 7) {
+            continue;
+          }
+
+          let component = 1;
+
+          if (index % 4 === 0) {
+            component = 0;
+          } else if (index % 2 === 0) {
+            component = 2;
+          }
+
+          nextVertex[component] *= -1;
+        }
+      }
 
       return vertices;
     }
 
-    [buildPlane] (vertices, u, v, w, uDir, vDir, width, height, depth, index) {
-      let halfWidth = width / 2;
-      let halfHeight = height / 2;
-      let offset = index * 4 * this.size;
-
-      for (let y = 0; y < 2; ++y) {
-        for (let x = 0; x < 2; ++x) {
-          let index = y * (x + 1) * 3 + offset;
-
-          vertices[index + u] = (x * width - halfWidth) * uDir;
-          vertices[index + v] = (y * height - halfHeight) * vDir;
-          vertices[index + w] = depth;
-          console.log(index, ':', vertices[index], vertices[index + 1], vertices[index + 2]);
-        }
-      }
+    allocateIndices () {
+      return boxIndices;
     }
   }
 

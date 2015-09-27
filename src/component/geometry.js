@@ -30,8 +30,12 @@
 
     constructor () {
       super();
-      this[rawVertices] = this.allocateVertices.apply(this, arguments);
-      this[rawIndices] = this.allocateIndices.apply(this, arguments);
+
+      let values = this.allocate.apply(this, arguments);
+
+      this[rawVertices] = values.vertices;
+      this[rawIndices] = values.indices;
+
       this.update();
     }
 
@@ -41,6 +45,13 @@
         this.size * glMatrix.ARRAY_TYPE.BYTES_PER_ELEMENT * index,
         this.size
       );
+    }
+
+    allocate () {
+      return {
+        vertices: this.allocateVertices.apply(this, arguments),
+        indices: this.allocateIndices.apply(this, arguments)
+      };
     }
 
     allocateVertices () {
