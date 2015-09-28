@@ -28,6 +28,14 @@
       return 3;
     }
 
+    get canDraw () {
+      return !!this.material;
+    }
+
+    get material () {
+      return this.getSiblingComponent('material');
+    }
+
     constructor () {
       super();
 
@@ -89,6 +97,22 @@
       }
 
       return this[indexBuffer];
+    }
+
+    draw (gl) {
+      let program = this.material.program.link(gl);
+      let vertexPositionAttributeLocation = gl.getAttribLocation(program, 'vertexPosition');
+
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.createVertexBuffer(gl));
+
+      gl.vertexAttribPointer(vertexPositionAttributeLocation, this.size, gl.FLOAT, false, 0, 0);
+      gl.enableVertexAttribArray(vertexPositionAttributeLocation);
+
+      if (this.rawIndices.length) {
+        gl.drawElements(gl.TRIANGLES, this.rawIndices.length, gl.UNSIGNED_SHORT, 0);
+      } else {
+        gl.drawArrays(gl.TRIANGLES, 0, this.length);
+      }
     }
 
     * [Symbol.iterator] () {

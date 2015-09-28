@@ -20,7 +20,12 @@
       let transform = this.getComponent('transform');
 
       vec3.negate(interstitialVector, transform.position);
-      mat4.translate(modelViewMatrix, modelViewMatrix, interstitialVector);
+      mat4.fromRotationTranslation(
+        modelViewMatrix,
+        transform.rotation,
+        interstitialVector
+      );
+      //mat4.translate(modelViewMatrix, modelViewMatrix, interstitialVector);
       mat4.multiply(modelViewMatrix, modelViewMatrix, interstitialMatrix);
 
       mat4.perspective(perspectiveMatrix, this.fov, this.aspectRatio, this.near, this.far);

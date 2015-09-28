@@ -163,7 +163,7 @@
       }
 
       if (graphics) {
-        graphics.draw(this.gl, perspectiveMatrix, modelViewMatrix);
+        graphics.render(this.gl, perspectiveMatrix, modelViewMatrix);
       }
 
       for (let i = 0; i < sceneNode.children.length; ++i) {

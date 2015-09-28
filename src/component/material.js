@@ -25,14 +25,6 @@
       this[program] = _program || new Program();
     }
 
-    applyIfAble (gl, perspectiveMatrix, modelViewMatrix) {
-      if (!this.canApply) {
-        return;
-      }
-
-      this.apply(gl, perspectiveMatrix, modelViewMatrix);
-    }
-
     apply (gl, perspectiveMatrix, modelViewMatrix) {
       let program = this.program.link(gl);
       let perspectiveMatrixUniformLocation = gl.getUniformLocation(program, 'perspectiveMatrix');
